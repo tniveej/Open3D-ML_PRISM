@@ -59,8 +59,8 @@ def main():
     #las_path = r"/home/jeevin/Open3D-ML_PRISM/utils/LOT_BUNGALOW.las"
     #las_path = r"/mnt/c/Users/zulhe/OneDrive/Documents/LOT BUNGALOW/LOT_BUNGALOW.las"
     
-    Start = [-5950,-7900.45,50.32]
-    End = [-5950.05,-7870,60.27]
+    Start = [-6000,-7900.45,50]
+    End = [-5880.05,-7870,50]
     tol = 0.05
     
     Data = np.load(file_path)
@@ -85,12 +85,13 @@ def main():
     # saved per file. Currently set at 1,100,000 points per file or 19 batches per file.
 
     # results = testing.load_data(ext='pkl')
-    # testing.SavetoLas(results)
+    # testing.SavetoJson(results,Dict_num=19)
+    #testing.SavetoLas(results)
     #testing.SavetoPkl(results,Dict_num=19)
        
 
 
-    #testing.PklVisualizer() # Use this to load saved data. (Optional) Provide directory to the saved files.
+    #testing.JsonVisualizer() # Use this to load saved data. (Optional) Provide directory to the saved files.
     #Comment out the lines associated to running inference above when running the visualizer
         
     

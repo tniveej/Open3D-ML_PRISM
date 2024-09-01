@@ -10,10 +10,11 @@ import numpy as np
 
 def main():
     #play around with the start and end
-    Start = [-50,5,0.3]
-    End = [100,40,2]
-    tol = 0.1 #Huge tolerance of 0.5m for each side of the line
+    Start = [-100,-50,7]
+    End = [95,40,7]
+    tol = 0.05 #Huge tolerance of 0.5m for each side of the line
     
+        
     dir_path = os.path.dirname(os.path.realpath(__file__))
     file_path = os.path.join(dir_path,"sample_Data.npy")
     sliced_path = os.path.join(dir_path,"Sliced_points.npy")
@@ -23,11 +24,12 @@ def main():
     
     Data = np.load(file_path)
     cross_sec = PostProcess()
-    cross_sec.pc_slice(Start,End,tol,Data,"XY") #try to change the plane orientation XY,XZ,YZ
+    cross_sec.pc_slice(Start,End,tol,Data,"XZ") #try to change the plane orientation XY,XZ,YZ
     
     
     Visualize = CustomDataLoader(cfg)
     Visualize.VisualizingData(sliced_path)
+    #Visualize.VisualizingData(file_path)
     
     
 if __name__ == "__main__":
