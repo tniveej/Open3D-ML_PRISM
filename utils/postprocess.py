@@ -2,14 +2,15 @@ import numpy as np
 import os
 import sys
 import math
+from pathlib import Path
 from typing import Literal
 
 class PostProcess():
     def __init__(self) -> None:
         
         main_path = os.path.abspath(sys.argv[0])
-        self.dir = os.path.dirname(os.path.abspath(main_path))
-        self.file_path = os.path.join(self.dir, "Sliced_points.npy")
+        self.dir = Path(main_path).parent
+        self.file_path = self.dir / "Sliced_points.npy"
     
     def pc_slice(self,Start,End,tolerance,result,plane: Literal['XY', 'XZ', 'YZ'] = 'XY'):
         #Straight line function of y = mx + c
@@ -71,7 +72,7 @@ class PostProcess():
             
             print(f"NOTE: Vertical line in {plane}-plane detected")
             print(f"Length of sliced data: {len(sliced_points)}")
-        
+                   
         return sliced_points
         
         
@@ -151,10 +152,5 @@ class PostProcess():
             Data.append(sliced_points)
         
         Data = np.unique(Data,axis=0)
-        file_name = os.path.join(self.dir, "Polyline_sliced_pc.npy")
-        return np.save(file_name,Data)
-        
-        
-        
-        
-
+        file_name = self.dir / "Polyline_sliced_pc.npy"
+        return np.save(str(file_name),Data) 
