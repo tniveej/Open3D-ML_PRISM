@@ -132,19 +132,15 @@ class PostProcess():
         print(f"Domain range of Z-axis: [{min(result[:,2])} {max(result[:,2])}]")
         
         print("\nChecking the coordinates specified in polyline...")
-        try:
-            for i, line in enumerate(polyline):
-                End_Check = line[1]
-                Next_Start = polyline[i+1][0] #Start of the next point
-                
-                if End_Check != Next_Start:
-                    print("Error: End of previous line and Start of next line must have similar coordinate")
-                    quit()
-        except:
-            print("Error: Check if polyline format is correct\nLine1 = [Start,End]")
-            print("\nLine2 = [Start,End]\nLine3 = [Start,End]")
-            print("\npolyline = [Line1,Line2,Line3,..] ")          
+        
+        for i, line in enumerate(polyline):
+            End_Check = line[1]
+            Next_Start = polyline[i+1][0] #Start of the next point
             
+            if End_Check != Next_Start:
+                print("Error: Current End line and Start of next line must have similar coordinate")
+                quit()
+        
         print("Polyline coordinates checked. Generating cross-sectional profile...")
                 
         Data = []
@@ -154,6 +150,7 @@ class PostProcess():
             sliced_points = self.__pc_slicer(Start,End,tolerance,result,plane)
             Data.append(sliced_points)
         
+        Data = np.unique(Data,axis=0)
         file_name = os.path.join(self.dir, "Polyline_sliced_pc.npy")
         return np.save(file_name,Data)
         
