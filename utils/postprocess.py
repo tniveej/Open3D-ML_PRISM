@@ -21,7 +21,13 @@ class PostProcess():
         print(f"Domain range of Y-axis: [{min(result[:,1])} {max(result[:,1])}]")
         print(f"Domain range of Z-axis: [{min(result[:,2])} {max(result[:,2])}]")
         
-        change_ind, res_ind = self.planar_axes(plane)
+        sliced_points = self.__pc_slicer(Start,End,tolerance,result,plane)
+                   
+        return np.save(self.file_path,sliced_points)
+        
+    def __pc_slicer(self,Start,End,tolerance,result,plane):
+        
+        change_ind, res_ind = self._planar_axes(plane)
         top_dif = End[res_ind] - Start[res_ind]
         bottom_dif = End[change_ind] - Start[change_ind]
         sample_points = result[:,change_ind]
@@ -33,7 +39,7 @@ class PostProcess():
             c = End[res_ind] - m*End[change_ind]
             prop = [m,c]
         
-        benchmark = self.tolerance_limit(prop,tolerance)
+        benchmark = self._tolerance_limit(prop,tolerance)
         print(f"Benchmark value: {benchmark}") #should return a single value
         
         #when straight line is not vertical
@@ -67,9 +73,10 @@ class PostProcess():
             print(f"NOTE: Vertical line in {plane}-plane detected")
             print(f"Length of sliced data: {len(sliced_points)}")
                    
-        return np.save(str(self.file_path),sliced_points)
+        return sliced_points
         
-    def tolerance_limit(self,prop,tolerance): 
+        
+    def _tolerance_limit(self,prop,tolerance): 
         #tolerance is defined as the perpendicular distance from an imaginary offset line to the created line
         
         if len(prop) == 1: #for vertical straight line
@@ -84,7 +91,7 @@ class PostProcess():
         return compare  
     
     
-    def planar_axes(self,plane):
+    def _planar_axes(self,plane):
         #return index of the two axes that make up the plane
         #array is expected to be in [x,y,z] orientation
         #index is based on manipulated(change) and responding(res) variables
@@ -111,9 +118,39 @@ class PostProcess():
                 
         res_points = m*sample_points + c
                
-        return res_points     
+        return res_points
+    
+    def pc_polyline_slice(self,polyline,tolerance,result,plane: Literal['XY', 'XZ', 'YZ'] = 'XY'):
         
+        #Line1 = [Start,End]
+        #Line2 = [Start,End]
+        #Line3 = [Start,End]
         
+        #polyline = [Line1,Line2,Line3,..] the way to store polyline values
         
+        print(f"\nDomain range of X-axis: [{min(result[:,0])} {max(result[:,0])}]")
+        print(f"Domain range of Y-axis: [{min(result[:,1])} {max(result[:,1])}]")
+        print(f"Domain range of Z-axis: [{min(result[:,2])} {max(result[:,2])}]")
         
-
+        print("\nChecking the coordinates specified in polyline...")
+        
+        for i, line in enumerate(polyline):
+            End_Check = line[1]
+            Next_Start = polyline[i+1][0] #Start of the next point
+            
+            if End_Check != Next_Start:
+                print("Error: Current End line and Start of next line must have similar coordinate")
+                quit()
+        
+        print("Polyline coordinates checked. Generating cross-sectional profile...")
+                
+        Data = []
+        for line in polyline:
+            Start = line[0]
+            End = line[1]
+            sliced_points = self.__pc_slicer(Start,End,tolerance,result,plane)
+            Data.append(sliced_points)
+        
+        Data = np.unique(Data,axis=0)
+        file_name = self.dir / "Polyline_sliced_pc.npy"
+        return np.save(str(file_name),Data) 
